@@ -93,8 +93,8 @@ new Vue({
   router,
   template: '<App/>',
   components: { App },
-  store
-  // mounted: function () {
-  //   this.$router.push({ name: 'homepage' })
-  // }
+  store,
+  mounted: function () {
+    this.$router.push({ name: 'homepage' })
+  }
 })

@@ -50,16 +50,13 @@
                 <el-menu-item index="3-3">C13</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-              
             </el-menu>
           </el-col>
         </el-row>       
         </el-aside>
         <el-container>
           <el-main>
-            <v-app>
-              <router-view></router-view>
-            </v-app>
+            <router-view></router-view>
           </el-main>
         </el-container>
       </el-container>
