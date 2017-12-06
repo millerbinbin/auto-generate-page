@@ -70,12 +70,12 @@
 body {
   background-color: white;
   margin: 0;
+  font-size: 13px;
 }
 .application {
   padding-top: 0px;
   background-color: white;
   color: black;
-  font-size: 15px;
 }
 
 </style>
