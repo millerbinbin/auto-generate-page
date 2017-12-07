@@ -3,13 +3,14 @@
     <el-container>
       <el-header style='padding:0; background: #0093D5'>
         <el-row>
-          <el-col :span="21" :offset="3">
+          <el-col :span="24">
             <el-menu
               default-active="1"
               mode="horizontal"
               text-color="#fff"
               background-color="#0093D5"
-              active-text-color="#ffd04b">
+              active-text-color="#ffd04b"
+              style="padding-left: 200px">
               <el-menu-item index="1">AAA</el-menu-item>
               <el-menu-item index="2">BBB</el-menu-item>
               <el-menu-item index="3">CCC</el-menu-item>
@@ -17,10 +18,9 @@
             </el-menu>
           </el-col>
         </el-row>
-        
       </el-header>
       <el-container>
-        <el-aside width="200px" style='background: #252D2F; height: 100%'>
+        <el-aside width="200px" style='background: #252D2F; height: 750px'>
           <el-menu
             default-active="2"
             background-color="#252D2F"
