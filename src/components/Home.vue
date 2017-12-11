@@ -111,11 +111,11 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="1"
+        :current-page="pageNo"
         :page-sizes="[10, 20, 40]"
-        :page-size="10"
+        :page-size="pageSize"
         layout="total, sizes, prev, pager, next"
-        :total="this.tableData.length">
+        :total="this.tableCount">
       </el-pagination>
     </el-row>
   </div>
@@ -136,6 +136,14 @@
 
   .el-form-item__label {
     font-size: 13px;
+  }
+
+  .el-table {
+    font-size: 14px;
+  }
+
+  .el-table td, .el-table th {
+    padding: 8px 0px;
   }
 </style>
 <script>
@@ -163,7 +171,10 @@
         selectedId: [],
         columns: [],
         tableData: [],
-        loading: true
+        loading: true,
+        pageSize: 10,
+        pageNo: 1,
+        tableCount: 0
       }
     },
     methods: {
@@ -293,8 +304,14 @@
       onSelect: function () {
         this.editList = JSON.parse(JSON.stringify(this.editList))
       },
-      handleSizeChange: function () {},
-      handleCurrentChange: function () {},
+      handleSizeChange: function (val) {
+        this.pageSize = val
+        this.getData()
+      },
+      handleCurrentChange: function (val) {
+        this.pageNo = val
+        this.getData()
+      },
       handleSelectionChange: function (val) {
         this.selectedId = []
         val.forEach(element => {
@@ -320,12 +337,14 @@
       getData: function (condition) {
         this.loading = true
         let params = ''
-        if (condition) {
-          params = '?' + qs.stringify(condition)
-        }
+        condition = condition || {}
+        condition.pageSize = this.pageSize
+        condition.pageNo = this.pageNo
+        params = '?' + qs.stringify(condition)
         axios.get('/api/data/t_user' + params)
         .then(function (response) {
-          this.tableData = response.data
+          this.tableData = response.data.rows
+          this.tableCount = response.data.count
           this.loading = !this.loading
         }.bind(this))
         .catch(function (error) {
