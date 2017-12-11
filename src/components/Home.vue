@@ -174,7 +174,8 @@
         loading: true,
         pageSize: 10,
         pageNo: 1,
-        tableCount: 0
+        tableCount: 0,
+        tableName: 't_role'
       }
     },
     methods: {
@@ -187,7 +188,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          axios.delete('/api/data/t_user/' + row.id)
+          axios.delete('/api/data/' + this.tableName + '/' + row.id)
             .then(function (response) {
               console.log(response)
               this.getData()
@@ -213,7 +214,7 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            axios.delete('/api/data/t_user/multiple/' + this.selectedId.join(','))
+            axios.delete('/api/data/' + this.tableName + '/multiple/' + this.selectedId.join(','))
               .then(function (response) {
                 console.log(response)
                 this.getData()
@@ -244,7 +245,7 @@
       Add: function () {
         this.$refs['addList'].validate((valid) => {
           if (valid) {
-            axios.post('/api/data/t_user', this.addList)
+            axios.post('/api/data/' + this.tableName, this.addList)
             .then(function (response) {
               console.log(response)
               this.$message({
@@ -275,7 +276,7 @@
       Edit: function () {
         this.$refs['editList'].validate((valid) => {
           if (valid) {
-            axios.put('/api/data/t_user/' + this.curId, this.editList)
+            axios.put('/api/data/' + this.tableName + '/' + this.curId, this.editList)
             .then(function (response) {
               console.log(response)
               this.$message({
@@ -319,7 +320,7 @@
         })
       },
       getColumns: function () {
-        axios.get('/api/model/t_user')
+        axios.get('/api/model/' + this.tableName)
         .then(function (response) {
           this.columns = response.data
           var that = this
@@ -341,7 +342,7 @@
         condition.pageSize = this.pageSize
         condition.pageNo = this.pageNo
         params = '?' + qs.stringify(condition)
-        axios.get('/api/data/t_user' + params)
+        axios.get('/api/data/' + this.tableName + params)
         .then(function (response) {
           this.tableData = response.data.rows
           this.tableCount = response.data.count
