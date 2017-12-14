@@ -29,8 +29,8 @@
             <el-submenu index="1">
               <template slot="title"><span>AA1</span></template>
               <el-menu-item-group>
-                <el-menu-item index="1-1">A11</el-menu-item>
-                <el-menu-item index="1-2">A12</el-menu-item>
+                <el-menu-item index="1-1" @click="testlink('t_user')">A11</el-menu-item>
+                <el-menu-item index="1-2" @click="testlink('t_role')">A12</el-menu-item>
                 <el-menu-item index="1-3">A13</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
@@ -82,6 +82,14 @@ body {
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  methods: {
+    testlink: function (table) {
+      this.$router.push({ name: 'homepage', query: {table: table}, replace: true })
+    }
+  },
+  mounted: function () {
+    this.$router.push({ name: 'empty' })
+  }
 }
 </script>
