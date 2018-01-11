@@ -3,19 +3,16 @@
   <el-dialog title="新建" :visible.sync="showDialog" :before-close="handleClose">
     <el-form :rules="rules" :model="formData" ref="formData" :label-position="labelPosition" label-width="30%">
       <el-row>
-        <el-col :span="12" v-for="(item, idx) in row" :key="item.name">
+        <el-col :span="colSpan" v-for="(item, idx) in row" :key="item.name">
           <el-form-item :label="item.label + ':'" :prop="item.name">
-            <el-input v-if="item.type==='input'" size="medium" style="width: 80%" v-model="formData[item.name]"></el-input>
-            <el-select v-else-if="item.type==='select'" size="medium" v-model="formData[item.name]">
-              <el-option :label="null" :value="null"></el-option>
-              <el-option v-for="item in item.selectionList" :key="item.key" :label="item.value" :value="item.key"></el-option>
-            </el-select>
-            <el-date-picker v-else-if="item.type==='date'" v-model="formData[item.name]" 
-              type="date" value-format="yyyy-MM-dd" size="medium" style="width: 80%" placeholder="选择日期">
-            </el-date-picker>
-            <el-input v-if="item.type==='search'" size="medium" readonly style="width: 80%" v-model="model[item.name]">
+            <EInput v-if="item.type==='input'" :meta="item" @setValue="setValue"/>
+            <EDate v-else-if="item.type==='date'" :meta="item" @setValue="setValue"/>
+            <ESelect v-else-if="item.type==='select'" :meta="item" @setValue="setValue"/>
+            <EMultiSelect v-else-if="item.type==='multi-select'" :meta="item" @setValue="setValue"/>
+            <ETree v-else-if="item.type==='tree-select'" :meta="item" @setValue="setValue" @setRelation="setRelation"/>
+            <!-- <el-input v-else-if="item.type==='search'" size="medium" readonly style="width: 80%" v-model="formData[item.name]">
               <el-button slot="append" size="mini" icon="el-icon-search" @click="openSelectTable(item.name)"></el-button>
-            </el-input>
+            </el-input> -->
           </el-form-item>
         </el-col>
       </el-row>
@@ -29,22 +26,49 @@
     
 <script>
   import axios from 'axios'
+  import qs from 'qs'
+  import EInput from '@/components/elements/EInput.vue'
+  import EDate from '@/components/elements/EDate.vue'
+  import ESelect from '@/components/elements/ESelect.vue'
+  import EMultiSelect from '@/components/elements/EMultiSelect.vue'
+  import ETree from '@/components/elements/ETree.vue'
   export default {
+    components: {EInput, EDate, ESelect, EMultiSelect, ETree},
     data: function () {
       return {
         labelPosition: 'right',
         showDialog: true,
-        formData: {}
+        formData: {},
+        relationData: {}
       }
     },
-    props: ['row', 'model', 'rules', 'tableName'],
+    props: ['row', 'model', 'rules', 'tableName', 'colSpan'],
     methods: {
+      setValue: function (key, val) {
+        this.formData[key] = val
+      },
+      setRelation: function (key, val) {
+        this.relationData[key] = val
+      },
       handleClose: function () {
         this.$emit('setCurrentView', '')
       },
       Cancel: function () {
         this.showDialog = false
         this.$emit('setCurrentView', '')
+      },
+      updateRelation: function (inValue) {
+        for (let key in this.relationData) {
+          let param = this.relationData[key]
+          param['inValue'] = inValue
+          let params = '?' + qs.stringify(param)
+          axios.put('/api/relation/' + param.tableName + params)
+            .then(function (response) {
+            })
+            .catch(function (error) {
+              console.log(error)
+            })
+        }
       },
       Add: function () {
         this.$refs['formData'].validate((valid) => {

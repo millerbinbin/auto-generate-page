@@ -1,5 +1,5 @@
 <template>
   <div>
-    empty  
+    Welcome!  
   </div>  
 </template>

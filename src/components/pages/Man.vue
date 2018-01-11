@@ -1,88 +1,67 @@
 <template>
-  <div id="home">
+  <div>
     <Search :columns="columns" @getQuery="getQuery" @refreshData="getData"></Search>
-    
-    <el-row>
+    <el-row style="padding-top: 10px; padding-bottom: 2px">
       <el-col :span="16">
         <el-button size="small" type="info" @click="handleAdd">新建</el-button>
         <el-button size="small" type="info" @click="handleBatchDelete">批量删除</el-button>
-        <el-button size="small" type="info" >导入</el-button>
-        <el-button size="small" type="info" >导出</el-button>
+        <!-- <el-button size="small" type="info" >导入</el-button>
+        <el-button size="small" type="info" >导出</el-button> -->
       </el-col>
-
-      <component v-bind:is="currentView"  :rules="rules"
-        :tableName="tableName" :curId="curId"
-        :model="model"
-        :row="row"
-        @refreshData="getData"
-        @setShowTableDialog="setShowTableDialog"
-        @setCurrentView="setCurrentView">
-      </component>
-      
-      <el-dialog title="查表数据" :visible.sync="showTableDialog">
-        <el-table :data="tableData" border highlight-current-row style="width: 100%" max-height="400" row-key="id" @current-change="handleSelectChange">
-          <el-table-column v-for="(col, idx) in columns" :key="col.name" :prop="col.name" :label="col.label">
-          </el-table-column>
-        </el-table>
-        <div slot="footer" style="text-align: center">
-          <el-button @click="showTableDialog=!showTableDialog">取 消</el-button>
-          <el-button type="primary">确 定</el-button>
-        </div>
-      </el-dialog>
-
-      <Grid :tableData="tableData" :tableName="tableName" :columns="columns" :loading="loading" :kvMapping="kvMapping" :tableCount="tableCount" :pageSize="pageSize" :pageNo="pageNo"
-        @setCurrentView="setCurrentView" 
-        @setCurrentRow="setCurrentRow"
-        @setCurrentId="setCurrentId"
-        @setCurrentModel="setCurrentModel"
-        @setCurrentPageNo="setCurrentPageNo"
-        @setCurrentPageSize="setCurrentPageSize"
-        @setSelectedIds="setSelectedIds"
-        @refreshData="getData"></Grid>
+      <!-- <el-col :span="4" :offset="4">
+        <el-button size="small" type="info" >批量激活</el-button>
+        <el-button size="small" type="info" >批量禁用</el-button>
+      </el-col> -->
     </el-row>
+
+    <component v-bind:is="currentView"  :rules="rules"
+      :tableName="tableName" :curId="curId"
+      :model="model"
+      :row="row" :colSpan="24"
+      @refreshData="getData"
+      @setShowTableDialog="setShowTableDialog"
+      @setCurrentView="setCurrentView">
+    </component>
+    
+    <el-dialog title="查表数据" :visible.sync="showTableDialog">
+      <el-table :data="tableData" border highlight-current-row style="width: 100%" max-height="400" row-key="id" @current-change="handleSelectChange">
+        <el-table-column v-for="col in columns" :key="col.name" :prop="col.name" :label="col.label">
+        </el-table-column>
+      </el-table>
+      <div slot="footer" style="text-align: center">
+        <el-button @click="showTableDialog=!showTableDialog">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <Grid :tableData="tableData" :tableName="tableName" :columns="columns" :loading="loading" :kvMapping="kvMapping" :tableCount="tableCount" :pageSize="pageSize" :pageNo="pageNo"
+      @setCurrentView="setCurrentView" 
+      @setCurrentRow="setCurrentRow"
+      @setCurrentId="setCurrentId"
+      @setCurrentModel="setCurrentModel"
+      @setCurrentPageNo="setCurrentPageNo"
+      @setCurrentPageSize="setCurrentPageSize"
+      @setSelectedIds="setSelectedIds"
+      @refreshData="getData">
+    </Grid>
   </div>
 </template>
 
-<style>
-  .el-row{
-    padding-bottom: 15px;
-  }
-
-  .el-select {
-    width: 80%
-  }
-
-  .el-button--mini, .el-button--mini.is-round {
-    padding: 5px 8px
-  }
-
-  .el-form-item__label {
-    font-size: 13px;
-  }
-
-  .el-table {
-    font-size: 14px;
-  }
-
-  .el-table td, .el-table th {
-    padding: 8px 0px;
-  }
-</style>
 <script>
   import axios from 'axios'
   import qs from 'qs'
-  import Search from './Search.vue'
-  import Add from './Add.vue'
-  import Open from './Open.vue'
-  import Edit from './Edit.vue'
-  import Grid from './Grid.vue'
+  import Search from '@/components/templates/Search.vue'
+  import Add from '@/components/templates/Add.vue'
+  import Open from '@/components/templates/Open.vue'
+  import Edit from '@/components/templates/Edit.vue'
+  import Grid from '@/components/templates/Grid.vue'
   export default {
     components: {
-      'Search': Search,
-      'Add': Add,
-      'Open': Open,
-      'Edit': Edit,
-      'Grid': Grid
+      Search,
+      Add,
+      Open,
+      Edit,
+      Grid
     },
     data: function () {
       return {
@@ -101,11 +80,11 @@
         pageSize: 10,
         pageNo: 1,
         tableCount: 0,
-        tableName: '',
         innerSelect: '',
         selectKey: ''
       }
     },
+    props: ['tableName'],
     methods: {
       getQuery: function (val) {
         this.query = val
@@ -119,7 +98,6 @@
           }).then(() => {
             axios.delete('/api/data/' + this.tableName + '/multiple/' + this.selectedIds.join(','))
               .then(function (response) {
-                console.log(response)
                 this.getData()
                 this.$message({
                   type: 'success',
@@ -165,7 +143,7 @@
         this.row = []
         this.model = {}
         this.columns.forEach(function (item) {
-          this.row.push({name: item.name, label: item.label, type: item.type, selectionList: item.selectionList})
+          this.row.push(item)
         }.bind(this))
         this.currentView = 'Add'
       },
@@ -176,7 +154,7 @@
           var that = this
           this.columns.forEach(function (item) {
             this.rules[item.name] = item.rules
-            if (item.selectionList) this.kvMapping[item.name] = item.selectionList
+            if (item.selectMapping) this.kvMapping[item.name] = item.selectMapping
           }.bind(this))
           this.getData()
         }.bind(this))
@@ -192,14 +170,14 @@
         condition.pageNo = this.pageNo
         params = '?' + qs.stringify(condition)
         axios.get('/api/data/' + this.tableName + params)
-        .then(function (response) {
-          this.tableData = response.data.rows
-          this.tableCount = response.data.count
-          this.loading = !this.loading
-        }.bind(this))
-        .catch(function (error) {
-          console.log(error)
-        })
+          .then(function (response) {
+            this.tableData = response.data.rows
+            this.tableCount = response.data.count
+            this.loading = !this.loading
+          }.bind(this))
+          .catch(function (error) {
+            console.log(error)
+          })
       },
       openSelectTable: function (val) {
         this.showTableDialog = !this.showTableDialog
@@ -214,12 +192,10 @@
       }
     },
     mounted: function () {
-      this.tableName = this.$route.query.table
       this.getColumns()
     },
     watch: {
-      $route: function (val) {
-        this.tableName = this.$route.query.table
+      tableName: function (val) {
         this.pageSize = 10
         this.pageNo = 1
         this.query = {}
