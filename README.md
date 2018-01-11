@@ -1,8 +1,6 @@
 =======
-logistics-cloud-dashboard-frontend
 ====
-物流云-数据产品-前端
-
+页面自动生成器（管理系统）
 > A Vue.js project
 
 ## Build Setup
